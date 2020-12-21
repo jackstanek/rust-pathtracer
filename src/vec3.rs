@@ -97,19 +97,19 @@ impl Vec3 {
         Self {x: x, y: y, z: z}
     }
 
-    pub fn length_squared(self) -> f64 {
+    pub fn length_squared(&self) -> f64 {
         self.x.powi(2) + self.y.powi(2) + self.z.powi(2)
     }
 
-    pub fn length(self) -> f64 {
+    pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
-    pub fn dot(self, rhs: Self) -> f64 {
+    pub fn dot(&self, rhs: &Self) -> f64 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
-    pub fn cross(self, rhs: Self) -> Self {
+    pub fn cross(&self, rhs: &Self) -> Self {
         Self {
             x: self.y * rhs.z - self.z * rhs.y,
             y: self.z * rhs.x - self.x * rhs.z,
@@ -117,19 +117,19 @@ impl Vec3 {
         }
     }
 
-    pub fn unit_vector(self: Self) -> Self {
-        self / self.length()
+    pub fn unit_vector(self: &Self) -> Self {
+        *self / self.length()
     }
 
-    pub fn x(self) -> f64 {
+    pub fn x(&self) -> f64 {
         self.x
     }
 
-    pub fn y(self) -> f64 {
+    pub fn y(&self) -> f64 {
         self.y
     }
 
-    pub fn z(self) -> f64 {
+    pub fn z(&self) -> f64 {
         self.z
     }
 }
