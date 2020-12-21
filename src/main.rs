@@ -6,6 +6,16 @@ use crate::vec3::{Vec3,Color};
 use crate::color::write_color;
 use crate::ray::Ray;
 
+fn intersects_sphere(center: &Vec3, radius: f64, ray: &Ray) -> bool {
+    let oc = ray.origin() - *center;
+    let dir = ray.direction();
+    let a = dir.dot(&dir);
+    let b = oc.dot(&dir) * 2.0;
+    let c = oc.dot(&oc) - radius.powi(2);
+    let discrim = b.powi(2) - 4.0 * a * c;
+    discrim > 0.0
+}
+
 fn ray_color(ray: &Ray) -> Color {
     let unit_direction = ray.direction().unit_vector();
     let t = 0.5 * (unit_direction.y() + 1.0);
@@ -37,7 +47,11 @@ fn main() -> std::io::Result<()> {
             let u = i as f64 / (width - 1) as f64;
             let v = (height - j) as f64 / (height - 1) as f64;
             let r = Ray::new(&origin, &(lower_left_corner + (horizontal * u) + (vertical * v) - origin));
-            let pixel_color = ray_color(&r);
+            let pixel_color = if intersects_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, &r){
+                Vec3::new(1.0, 1.0, 1.0)
+            } else {
+                ray_color(&r)
+            };
             write_color(pixel_color)
         }
     }
