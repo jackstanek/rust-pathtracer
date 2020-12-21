@@ -134,5 +134,5 @@ impl Vec3 {
     }
 }
 
-type Point = Vec3;
-type Color = Vec3;
+pub type Point = Vec3;
+pub type Color = Vec3;
