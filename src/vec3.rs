@@ -3,9 +3,9 @@ use core::ops;
 /* Just a simple 3-tuple representing a vector. */
 #[derive(Clone, Copy, Debug)]
 pub struct Vec3 {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64
+    x: f64,
+    y: f64,
+    z: f64
 }
 
 impl ops::Add for Vec3 {
@@ -119,6 +119,18 @@ impl Vec3 {
 
     pub fn unit_vector(self: Self) -> Self {
         self / self.length()
+    }
+
+    pub fn x(self) -> f64 {
+        self.x
+    }
+
+    pub fn y(self) -> f64 {
+        self.y
+    }
+
+    pub fn z(self) -> f64 {
+        self.z
     }
 }
 
