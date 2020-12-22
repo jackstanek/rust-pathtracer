@@ -1,36 +1,27 @@
 mod color;
-mod vec3;
+mod hittable;
 mod ray;
+mod sphere;
+mod vec3;
 
 use std::option::Option;
 
 use crate::vec3::{Vec3,Color};
 use crate::color::write_color;
+use crate::hittable::Hittable;
 use crate::ray::Ray;
+use crate::sphere::Sphere;
 
-fn intersects_sphere(center: &Vec3, radius: f64, ray: &Ray) -> Option<f64> {
-    let oc = ray.origin() - *center;
-    let dir = ray.direction();
-    let a = dir.length_squared();
-    let half_b = oc.dot(&dir);
-    let c = oc.length_squared() - radius.powi(2);
-    let discrim = half_b.powi(2) - a * c;
-    if discrim > 0.0 {
-        Some((-half_b - discrim.sqrt()) / a)
-    } else {
-        None
-    }
-}
 
 fn ray_color(ray: &Ray) -> Color {
-    match intersects_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, ray) {
-        Some(t) => {
-            let N = (ray.point_at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
-            Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0) * 0.5
+    let sphere = Sphere::new(&Vec3::new(0.0, 0.0, -1.0), 0.5);
+    match sphere.hit(ray, 0.0, 100.0) {
+        Some(hr) => {
+            Color::new(hr.normal.x() + 1.0, hr.normal.y() + 1.0, hr.normal.z() + 1.0) * 0.5
         },
         None => {
-           let t = 0.5 * (ray.direction().y() + 1.0);
-           Color::new(1.0, 1.0, 1.0) * (1.0 - t) + Color::new(0.5, 0.7, 1.0) * t
+            let t = 0.5 * (ray.direction().y() + 1.0);
+            Color::new(1.0, 1.0, 1.0) * (1.0 - t) + Color::new(0.5, 0.7, 1.0) * t
         }
     }
 }
