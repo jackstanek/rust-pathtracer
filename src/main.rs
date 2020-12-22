@@ -11,12 +11,12 @@ use crate::ray::Ray;
 fn intersects_sphere(center: &Vec3, radius: f64, ray: &Ray) -> Option<f64> {
     let oc = ray.origin() - *center;
     let dir = ray.direction();
-    let a = dir.dot(&dir);
-    let b = oc.dot(&dir) * 2.0;
-    let c = oc.dot(&oc) - radius.powi(2);
-    let discrim = b.powi(2) - 4.0 * a * c;
+    let a = dir.length_squared();
+    let half_b = oc.dot(&dir);
+    let c = oc.length_squared() - radius.powi(2);
+    let discrim = half_b.powi(2) - a * c;
     if discrim > 0.0 {
-        Some((-b - discrim.sqrt()) / (2.0 * a))
+        Some((-half_b - discrim.sqrt()) / a)
     } else {
         None
     }
@@ -38,7 +38,7 @@ fn ray_color(ray: &Ray) -> Color {
 fn main() -> std::io::Result<()> {
     /* Image setup */
     let aspect_ratio = 16.0 / 9.0;
-    let width: u64 = 720;
+    let width: u64 = 640;
     let height: u64 = (width as f64 / aspect_ratio) as u64;
     let depth: f64 = 255.999;
 
