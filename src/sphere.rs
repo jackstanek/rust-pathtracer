@@ -44,9 +44,9 @@ impl Hittable for Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: &Vec3, radius: f64) -> Self {
+    pub fn new(x: f64, y: f64, z: f64, radius: f64) -> Self {
         Sphere {
-            center: *center,
+            center: Vec3::new(x, y, z),
             radius: radius
         }
     }
