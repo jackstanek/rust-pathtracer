@@ -15,8 +15,8 @@ impl Hittable for Sphere {
         let dir = ray.direction();
         let a = dir.length_squared();
         let half_b = oc.dot(&dir);
-        let c = oc.length_squared() - self.radius.powi(2);
-        let discrim = half_b.powi(2) - a * c;
+        let c = oc.length_squared() - (self.radius * self.radius);
+        let discrim = (half_b * half_b) - a * c;
 
         if discrim < 0.0 {
             None
