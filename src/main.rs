@@ -1,3 +1,4 @@
+mod camera;
 mod color;
 mod hittable;
 mod ray;
@@ -10,7 +11,7 @@ use crate::hittable::{Hittable,HittableList};
 use crate::ray::Ray;
 use crate::sphere::Sphere;
 
-fn ray_color(ray: &Ray, world: &Hittable) -> Color {
+fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
     match world.hit(ray, 0.0, 100.0) {
         Some(hr) => {
             Color::new(hr.normal.x() + 1.0, hr.normal.y() + 1.0, hr.normal.z() + 1.0) * 0.5
