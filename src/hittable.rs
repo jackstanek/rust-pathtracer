@@ -7,7 +7,8 @@ use crate::vec3::Vec3;
 pub struct HitRecord {
     pub point: Vec3,
     pub normal: Vec3,
-    pub t: f64 /* point along a ray originating at the camera */
+    pub t: f64, /* point along a ray originating at the camera */
+    pub front_face: bool
 }
 
 pub trait Hittable {
@@ -16,11 +17,23 @@ pub trait Hittable {
 
 impl HitRecord {
     /* Helper function to construct a successful hit */
-    pub fn some_hit(point: &Vec3, normal: &Vec3, t: f64) -> Option<Self> {
+    pub fn some_hit(point: &Vec3, normal: &Vec3, t: f64, front_face: bool) -> Option<Self> {
         Some(HitRecord {
             point: *point,
             normal: *normal,
-            t: t
+            t: t,
+            front_face: front_face
         })
     }
+}
+
+/* Normals should always point "outward", i.e. against the incident ray */
+pub fn face_normal(ray: &Ray, outward_normal: &Vec3) -> (bool, Vec3) {
+    let front_face = ray.direction().dot(outward_normal) < 0.0;
+    let n = if front_face {
+        *outward_normal
+    } else {
+        -(*outward_normal)
+    };
+    (front_face, n)
 }

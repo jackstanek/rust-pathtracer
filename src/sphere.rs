@@ -1,6 +1,6 @@
 use std::option::Option;
 
-use crate::hittable::{Hittable,HitRecord};
+use crate::hittable::{Hittable,HitRecord,face_normal};
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
@@ -36,7 +36,9 @@ impl Hittable for Sphere {
             };
 
             let point = ray.point_at(root);
-            HitRecord::some_hit(&point, &((point - self.center) / self.radius), root)
+            let outward_normal = (point - self.center) / self.radius;
+            let (front_face, n) = face_normal(ray, &outward_normal);
+            HitRecord::some_hit(&point, &n, root, front_face)
         }
     }
 }
