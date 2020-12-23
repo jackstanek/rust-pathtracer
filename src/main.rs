@@ -4,18 +4,14 @@ mod ray;
 mod sphere;
 mod vec3;
 
-use std::option::Option;
-
 use crate::vec3::{Vec3,Color};
 use crate::color::write_color;
-use crate::hittable::Hittable;
+use crate::hittable::{Hittable,HittableList};
 use crate::ray::Ray;
 use crate::sphere::Sphere;
 
-
-fn ray_color(ray: &Ray) -> Color {
-    let sphere = Sphere::new(&Vec3::new(0.0, 0.0, -1.0), 0.5);
-    match sphere.hit(ray, 0.0, 100.0) {
+fn ray_color(ray: &Ray, world: &Hittable) -> Color {
+    match world.hit(ray, 0.0, 100.0) {
         Some(hr) => {
             Color::new(hr.normal.x() + 1.0, hr.normal.y() + 1.0, hr.normal.z() + 1.0) * 0.5
         },
@@ -43,6 +39,10 @@ fn main() -> std::io::Result<()> {
     let vertical = Vec3::new(0.0, viewport_height, 0.0);
     let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
 
+    let mut world = HittableList::new();
+    world.add(Box::new(Sphere::new(0.0, 0.0, -1.0, 0.5)));
+    world.add(Box::new(Sphere::new(0.0, -100.5, -1.0, 100.0)));
+
     /* Write the magic PPM header; "P3", then the width, height, and color depth. */
     println!("P3\n{} {}\n{}\n", width, height, depth.floor() as u64);
 
@@ -51,7 +51,7 @@ fn main() -> std::io::Result<()> {
             let u = i as f64 / (width - 1) as f64;
             let v = (height - j) as f64 / (height - 1) as f64;
             let r = Ray::new(&origin, &(lower_left_corner + (horizontal * u) + (vertical * v) - origin));
-            let pixel_color = ray_color(&r);
+            let pixel_color = ray_color(&r, &world);
             write_color(pixel_color)
         }
     }
