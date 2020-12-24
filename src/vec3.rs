@@ -1,4 +1,10 @@
 use core::ops;
+use std::f64::consts::PI;
+
+extern crate rand;
+use rand::{SeedableRng,Rng};
+use rand::distributions::Open01;
+use rand::rngs::SmallRng;
 
 /* Just a simple 3-tuple representing a vector. */
 #[derive(Clone, Copy, Debug)]
@@ -107,6 +113,32 @@ impl ops::Neg for Vec3 {
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self {x: x, y: y, z: z}
+    }
+
+    // x, y, and z components uniformly distributed in (-1, 1)
+    pub fn new_rand() -> Self {
+        let mut rng = SmallRng::from_entropy();
+        Self {
+            x: rng.sample::<f64, _>(Open01) * 2. - 1.,
+            y: rng.sample::<f64, _>(Open01) * 2. - 1.,
+            z: rng.sample::<f64, _>(Open01) * 2. - 1.,
+        }
+    }
+
+    // uniformly sample points on the unit sphere centered at the origin
+    pub fn new_rand_spherical() -> Self {
+        let mut rng = SmallRng::from_entropy();
+        let (u, v) = (rng.sample::<f64, _>(Open01), rng.sample::<f64, _>(Open01));
+
+        // See https://mathworld.wolfram.com/SpherePointPicking.html
+        let theta = 2. * PI * u;
+        let phi = (2. * v - 1.).acos();
+
+        Self {
+            x: theta.sin() * phi.cos(),
+            y: theta.sin() * phi.sin(),
+            z: theta.cos()
+        }
     }
 
     pub fn length_squared(&self) -> f64 {
