@@ -49,7 +49,7 @@ fn main() -> std::io::Result<()> {
     println!("P3\n{} {}\n{}\n", width, height, depth.floor() as u64);
 
     let mut rng = SmallRng::from_entropy();
-    let samples_per_pixel = 10;
+    let samples_per_pixel = 100;
     for j in 0..height {
         for i in 0..width {
             let mut pixel_color = Color::new(0.0, 0.0, 0.0);
@@ -61,8 +61,9 @@ fn main() -> std::io::Result<()> {
             }
             write_color(pixel_color / samples_per_pixel as f64)
         }
+        eprint!("\rProgress: {:.1}%", (j as f64 / height as f64) * 100.0);
     }
 
-    eprintln!("Done");
+    eprintln!("\nDone");
     Ok(())
 }
