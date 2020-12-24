@@ -119,25 +119,19 @@ impl Vec3 {
     pub fn new_rand() -> Self {
         let mut rng = SmallRng::from_entropy();
         Self {
-            x: rng.sample::<f64, _>(Open01) * 2. - 1.,
-            y: rng.sample::<f64, _>(Open01) * 2. - 1.,
-            z: rng.sample::<f64, _>(Open01) * 2. - 1.,
+            x: rng.gen_range(-1.0..1.0),
+            y: rng.gen_range(-1.0..1.0),
+            z: rng.gen_range(-1.0..1.0),
         }
     }
 
-    // uniformly sample points on the unit sphere centered at the origin
-    pub fn new_rand_spherical() -> Self {
-        let mut rng = SmallRng::from_entropy();
-        let (u, v) = (rng.sample::<f64, _>(Open01), rng.sample::<f64, _>(Open01));
-
-        // See https://mathworld.wolfram.com/SpherePointPicking.html
-        let theta = 2. * PI * u;
-        let phi = (2. * v - 1.).acos();
-
-        Self {
-            x: theta.sin() * phi.cos(),
-            y: theta.sin() * phi.sin(),
-            z: theta.cos()
+    // uniformly sample points within the unit sphere centered at the origin
+    pub fn new_rand_in_sphere() -> Self {
+        loop {
+            let test = Vec3::new_rand();
+            if test.length_squared() < 1. {
+                return test
+            }
         }
     }
 
