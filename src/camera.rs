@@ -9,7 +9,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64, viewport_height: f64, viewport_width: f64, focal_length: f64) -> Self {
+    pub fn new(viewport_height: f64, viewport_width: f64, focal_length: f64) -> Self {
         let origin = Vec3::new(0.0, 0.0, 0.0);
         let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
         let vertical = Vec3::new(0.0, viewport_height, 0.0);
