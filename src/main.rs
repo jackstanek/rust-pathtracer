@@ -41,7 +41,7 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u8) -> Color {
         return Color::new(0.0, 0.0, 0.0)
     }
 
-    match world.hit(ray, 0.0, f64::INFINITY) {
+    match world.hit(ray, 0.001, f64::INFINITY) {
         Some(hr) => {
             let target = hr.point + hr.normal + Point::new_rand_in_sphere();
             let new_ray = Ray::new(&hr.point, &(target - hr.point));
