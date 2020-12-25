@@ -1,9 +1,7 @@
 use core::ops;
-use std::f64::consts::PI;
 
 extern crate rand;
 use rand::{SeedableRng,Rng};
-use rand::distributions::Open01;
 use rand::rngs::SmallRng;
 
 /* Just a simple 3-tuple representing a vector. */

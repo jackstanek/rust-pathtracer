@@ -9,12 +9,27 @@ extern crate rand;
 use rand::{SeedableRng, Rng};
 use rand::rngs::SmallRng;
 
+extern crate minifb;
+use minifb::{Key, Window, WindowOptions};
+
 use crate::camera::Camera;
-use crate::vec3::{Color,Point};
-use crate::color::write_color;
+use crate::vec3::{Color,Point,Vec3};
 use crate::hittable::{Hittable,HittableList};
 use crate::ray::Ray;
 use crate::sphere::Sphere;
+
+fn clamp(x: f64, min: f64, max: f64) -> f64 {
+    max.min(x.max(min))
+}
+
+fn color_to_fb_pixel(color: &Color) -> u32 {
+    const DEPTH: f64 = 256.;
+    let r = (clamp((color.x()).sqrt(), 0., 0.999) * DEPTH) as u32;
+    let g = (clamp((color.y()).sqrt(), 0., 0.999) * DEPTH) as u32;
+    let b = (clamp((color.z()).sqrt(), 0., 0.999) * DEPTH) as u32;
+
+    (r << 16) | (g << 8) | b
+}
 
 fn background_color(ray: &Ray) -> Color {
     let t = 0.5 * (ray.direction().y() + 1.0);
@@ -41,9 +56,8 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u8) -> Color {
 fn main() -> std::io::Result<()> {
     /* Image setup */
     let aspect_ratio = 16.0 / 9.0;
-    let width: u64 = 640;
-    let height: u64 = (width as f64 / aspect_ratio) as u64;
-    let depth: f64 = 255.999;
+    let width: usize = 640;
+    let height: usize = (width as f64 / aspect_ratio) as usize;
 
     /* Camera setup. TODO: Factor this out somehow. */
     let viewport_height = 2.0;
@@ -55,25 +69,57 @@ fn main() -> std::io::Result<()> {
     world.add(Box::new(Sphere::new(0.0, 0.0, -1.0, 0.5)));
     world.add(Box::new(Sphere::new(0.0, -100.5, -1.0, 100.0)));
 
-    /* Write the magic PPM header; "P3", then the width, height, and color depth. */
-    println!("P3\n{} {}\n{}\n", width, height, depth.floor() as u64);
+    let mut framebuffer: Vec<u32> = vec![0; width * height];
+    let mut color_samples: Vec<Color> = Vec::with_capacity(width * height);
 
     let mut rng = SmallRng::from_entropy();
-    let samples_per_pixel = 2;
-    for j in 0..height {
-        for i in 0..width {
-            let mut pixel_color = Color::new(0.0, 0.0, 0.0);
-            for _ in 0..samples_per_pixel {
-                let u = (i as f64 + rng.gen::<f64>()) / (width - 1) as f64;
-                let v = ((height - j) as f64 + rng.gen::<f64>()) / (height - 1) as f64;
-                let r = camera.get_ray(u, v);
-                pixel_color += ray_color(&r, &world, 0);
-            }
-            write_color(pixel_color, samples_per_pixel)
-        }
-        eprint!("\rProgress: {:.1}%", (j as f64 / height as f64) * 100.0);
-    }
+    let samples_per_pixel = 100;
 
-    eprintln!("\nDone");
+    let mut window = Window::new(
+        "Rust Pathtracer",
+        width,
+        height,
+        WindowOptions::default()
+    ).unwrap_or_else(|e| {
+        panic!("{}", e)
+    });
+
+    window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
+    let mut finished_rendering = false;
+
+    while window.is_open() && !window.is_key_down(Key::Escape) {
+        if finished_rendering {
+            window.update();
+            continue;
+        }
+
+        for s in 0..samples_per_pixel {
+            for j in 0..height {
+                for i in 0..width {
+                    let u = (i as f64 + rng.gen::<f64>()) / (width - 1) as f64;
+                    let v = ((height - j) as f64 + rng.gen::<f64>()) / (height - 1) as f64;
+                    let r = camera.get_ray(u, v);
+                    let color = ray_color(&r, &world, 0);
+
+                    let index = width * j + i;
+                    if index < color_samples.len() {
+                        color_samples[index] = (color_samples[index] * s as f64 + color) / (s as f64 + 1.);
+                    } else {
+                        color_samples.push(color);
+                    }
+                }
+            }
+
+            for i in 0..(&color_samples).len() {
+                framebuffer[i] = color_to_fb_pixel(&color_samples[i]);
+            }
+
+            window.update_with_buffer(&framebuffer, width, height).unwrap();
+            eprint!("\rRendered {} samples", s + 1);
+        }
+
+        finished_rendering = true;
+        eprintln!("Finished.")
+    }
     Ok(())
 }
