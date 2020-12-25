@@ -73,7 +73,7 @@ fn main() -> std::io::Result<()> {
     let mut color_samples: Vec<Color> = Vec::with_capacity(width * height);
 
     let mut rng = SmallRng::from_rng(rand::thread_rng()).unwrap();
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 1000;
 
     let mut window = Window::new(
         "Rust Pathtracer",
@@ -119,7 +119,7 @@ fn main() -> std::io::Result<()> {
         }
 
         finished_rendering = true;
-        eprintln!("Finished.")
+        eprintln!("\nFinished.")
     }
     Ok(())
 }
