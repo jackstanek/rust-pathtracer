@@ -72,7 +72,7 @@ fn main() -> std::io::Result<()> {
     let mut framebuffer: Vec<u32> = vec![0; width * height];
     let mut color_samples: Vec<Color> = Vec::with_capacity(width * height);
 
-    let mut rng = SmallRng::from_entropy();
+    let mut rng = SmallRng::from_rng(rand::thread_rng()).unwrap();
     let samples_per_pixel = 100;
 
     let mut window = Window::new(

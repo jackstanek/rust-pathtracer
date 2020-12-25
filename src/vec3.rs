@@ -115,7 +115,7 @@ impl Vec3 {
 
     // x, y, and z components uniformly distributed in (-1, 1)
     pub fn new_rand() -> Self {
-        let mut rng = SmallRng::from_entropy();
+        let mut rng = SmallRng::from_rng(rand::thread_rng()).unwrap();
         Self {
             x: rng.gen_range(-1.0..1.0),
             y: rng.gen_range(-1.0..1.0),
