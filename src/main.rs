@@ -13,7 +13,7 @@ extern crate minifb;
 use minifb::{Key, Window, WindowOptions};
 
 use crate::camera::Camera;
-use crate::vec3::{Color,Point,Vec3};
+use crate::vec3::{Color,Point};
 use crate::hittable::{Hittable,HittableList};
 use crate::ray::Ray;
 use crate::sphere::Sphere;
@@ -43,7 +43,7 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u8) -> Color {
 
     match world.hit(ray, 0.001, f64::INFINITY) {
         Some(hr) => {
-            let target = hr.point + hr.normal + Point::new_rand_in_sphere();
+            let target = hr.point + hr.normal + Point::new_rand_in_sphere().unit_vector();
             let new_ray = Ray::new(&hr.point, &(target - hr.point));
             ray_color(&new_ray, world, depth + 1) * 0.5
         },
@@ -73,7 +73,7 @@ fn main() -> std::io::Result<()> {
     let mut color_samples: Vec<Color> = Vec::with_capacity(width * height);
 
     let mut rng = SmallRng::from_rng(rand::thread_rng()).unwrap();
-    let samples_per_pixel = 1000;
+    let samples_per_pixel = 100;
 
     let mut window = Window::new(
         "Rust Pathtracer",
