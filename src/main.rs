@@ -56,18 +56,20 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u8) -> Color {
 fn main() -> std::io::Result<()> {
     /* Image setup */
     let aspect_ratio = 16.0 / 9.0;
-    let width: usize = 640;
+    let width: usize = 720;
     let height: usize = (width as f64 / aspect_ratio) as usize;
 
     /* Camera setup. TODO: Factor this out somehow. */
     let viewport_height = 2.0;
-    let focal_length = 1.0;
+    let focal_length = 5.;
 
     let camera = Camera::new(viewport_height, aspect_ratio * viewport_height, focal_length);
 
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(0.0, 0.0, -1.0, 0.5)));
-    world.add(Box::new(Sphere::new(0.0, -100.5, -1.0, 100.0)));
+    world.add(Box::new(Sphere::new(0.0, 0.0, -5., 0.5)));
+    world.add(Box::new(Sphere::new(0.0, -100.5, -5., 100.0)));
+    world.add(Box::new(Sphere::new(-1.0, 0.0, -5., 0.5)));
+    world.add(Box::new(Sphere::new(1.0, 0.0, -5., 0.5)));
 
     let mut framebuffer: Vec<u32> = vec![0; width * height];
     let mut color_samples: Vec<Color> = Vec::with_capacity(width * height);
