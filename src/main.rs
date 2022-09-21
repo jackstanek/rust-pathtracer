@@ -1,6 +1,7 @@
 mod camera;
 mod color;
 mod hittable;
+mod material;
 mod ray;
 mod sphere;
 mod vec3;
@@ -43,8 +44,6 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: u8) -> Color {
 
     match world.hit(ray, 0.001, f64::INFINITY) {
         Some(hr) => {
-            let target = hr.point + hr.normal + Point::new_rand_in_sphere().unit_vector();
-            let new_ray = Ray::new(&hr.point, &(target - hr.point));
             ray_color(&new_ray, world, depth + 1) * 0.5
         },
         None => {

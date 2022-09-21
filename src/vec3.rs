@@ -78,20 +78,22 @@ impl ops::MulAssign<f64> for Vec3 {
 impl ops::Div<f64> for Vec3 {
     type Output = Self;
     fn div(self, rhs: f64) -> Self {
+        let inv: f64 = 1.0 / rhs;
         Self {
-            x: self.x / rhs,
-            y: self.y / rhs,
-            z: self.z / rhs
+            x: self.x * inv,
+            y: self.y * inv,
+            z: self.z * inv
         }
     }
 }
 
 impl ops::DivAssign<f64> for Vec3 {
     fn div_assign(&mut self, rhs: f64) {
+        let inv: f64 = 1.0 / rhs;
         *self = Self {
-            x: self.x / rhs,
-            y: self.y / rhs,
-            z: self.z / rhs
+            x: self.x * inv,
+            y: self.y * inv,
+            z: self.z * inv
         }
     }
 }

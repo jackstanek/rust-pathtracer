@@ -1,14 +1,17 @@
 use std::option::Option;
+use std::rc::Rc;
 
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct HitRecord {
     pub point: Vec3,
     pub normal: Vec3,
     pub t: f64, /* point along a ray originating at the camera */
-    pub front_face: bool
+    pub front_face: bool,
+    pub mat: Rc<dyn Material>
 }
 
 pub trait Hittable {
@@ -17,12 +20,13 @@ pub trait Hittable {
 
 impl HitRecord {
     /* Helper function to construct a successful hit */
-    pub fn some_hit(point: &Vec3, normal: &Vec3, t: f64, front_face: bool) -> Option<Self> {
+    pub fn some_hit(point: &Vec3, normal: &Vec3, t: f64, front_face: bool, mat: Rc<dyn Material>) -> Option<Self> {
         Some(HitRecord {
             point: *point,
             normal: *normal,
             t: t,
-            front_face: front_face
+            front_face: front_face,
+            mat: mat
         })
     }
 }
